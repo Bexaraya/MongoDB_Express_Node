@@ -103,10 +103,10 @@ router.put('/:todo_id', function (req, res) {
         }
         // set the speakers properties (comes from the request) 
         if (req.body.title) {
-            todo.id = req.body.title;
+            todo.title = req.body.title;
         }
         if (req.body.complete) {
-            todo.id = req.body.complete;
+            todo.complete = req.body.complete;
         }
 
         // save the data received
