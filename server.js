@@ -15,6 +15,7 @@ var MongoStore = require('connect-mongo')(session);
 var routes = require('./server/routes/index');
 var users = require('./server/routes/users');
 var todos = require('./server/routes/todos');
+var heroes = require('./server/routes/heroes');
 // Database configuration
 var config = require('./server/config/config.js');
 // connect to our database
@@ -47,7 +48,10 @@ mongoose.connection.on('error', function() {
         // persistent login sessions
         app.use(passport.session());
         // using routes
-        app.use('/', routes); app.use('/users', users); app.use('/api/todos', todos);
+        app.use('/', routes); 
+        app.use('/users', users); 
+        app.use('/api/todos', todos);
+        app.use('/api/heroes', heroes);
         // catch 404 and forward to error handler
         app.use(function(req, res, next) {
             var err = new Error('Not Found');
