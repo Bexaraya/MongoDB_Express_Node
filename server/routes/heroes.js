@@ -10,7 +10,7 @@ router.get('/', function (req, res) {
         Busco por nombre de la persona
     */
     if (req.query.name) {
-        Hero.find({'name' : new RegExp(req.query.name, 'i')}, function (err, hero) {
+        Hero.find({ 'name': new RegExp(req.query.name, 'i') }, function (err, hero) {
             if (err) {
                 res.send(err);
             }
@@ -40,12 +40,20 @@ router.get('/:todo_id', function (req, res) {
 }); */
 /* GET specific todo by id. */
 router.get('/:hero_id', function (req, res) {
-    Hero.findOne({ id: req.params.hero_id }, function (err, hero) {
-        if (err) {
-            res.send(err);
-        }
-        res.json(hero);
-    });
+    if (!req.params.hero_id || isNaN(req.params.hero_id)) {
+        res.status(500)
+        res.json({
+            error: 'ID no válido!'
+        });
+    }
+    else {
+        Hero.findOne({ id: req.params.hero_id }, function (err, hero) {
+            if (err) {
+                res.send(err);
+            }
+            res.json(hero);
+        });
+    }
 });
 
 /* POST todos */
@@ -107,42 +115,57 @@ router.put('/:todo_id', function (req, res) {
 
 /* UPDATE specific todo by id. */
 router.put('/:hero_id', function (req, res) {
-
-    Hero.findOne({ id: req.params.hero_id }, function (err, hero) {
-        if (err) {
-            res.send(err);
-        }
-        // set the hero properties (comes from the request) 
-        if (req.body.name) {
-            hero.name = req.body.name;
-        }
-
-        // save the data received
-        hero.save(function (err) {
+    if (!req.params.hero_id || isNaN(req.params.hero_id)) {
+        res.status(500)
+        res.json({
+            error: 'ID no válido!'
+        });
+    }
+    else {
+        Hero.findOne({ id: req.params.hero_id }, function (err, hero) {
             if (err) {
                 res.send(err);
             }
+            // set the hero properties (comes from the request) 
+            if (req.body.name) {
+                hero.name = req.body.name;
+            }
 
-            // return updated hero
-            res.json(hero);
+            // save the data received
+            hero.save(function (err) {
+                if (err) {
+                    res.send(err);
+                }
+
+                // return updated hero
+                res.json(hero);
+            });
         });
-    });
+    }
 });
 
 /* DELETE specific todo by _id. */
 router.delete('/:hero_id', function (req, res) {
-    Hero.remove({
-        id: req.params.hero_id
-    }, function (err, hero) {
-        if (err) {
-            res.send(err);
-        }
-
-        // return message notifying hero delete
+    if (!req.params.hero_id || isNaN(req.params.hero_id)) {
+        res.status(500)
         res.json({
-            message: 'Hero successfully deleted!'
+            error: 'ID no válido!'
         });
-    });
+    }
+    else {
+        Hero.remove({
+            id: req.params.hero_id
+        }, function (err, hero) {
+            if (err) {
+                res.send(err);
+            }
+
+            // return message notifying hero delete
+            res.json({
+                message: 'Hero successfully deleted!'
+            });
+        });
+    }
 });
 
 /* DELETE specific todo by id. 
