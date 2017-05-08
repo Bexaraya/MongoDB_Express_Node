@@ -3,18 +3,31 @@ var express = require('express');
 var router = express.Router();
 // Import Hero Model
 var Hero = require('../models/hero');
-/* GET all users. */
+/* GET all users OR filtered by name*/
 router.get('/', function (req, res) {
-    //res.json({
-    //    message: 'Hello SPA, the API is working!'
-    //});
-    Hero.find(function (err, heroes) {
-        if (err) {
-            res.send(err);
-        }
 
-        res.json(heroes);
-    });
+    /*
+        Busco por nombre de la persona
+    */
+    if (req.query.name) {
+        Hero.find({'name' : new RegExp(req.query.name, 'i')}, function (err, hero) {
+            if (err) {
+                res.send(err);
+            }
+
+            res.json(hero);
+        });
+    }
+    else // Retorno todas 
+    {
+        Hero.find(function (err, heroes) {
+            if (err) {
+                res.send(err);
+            }
+
+            res.json(heroes);
+        });
+    }
 });
 /* GET specific todo by _id. 
 router.get('/:todo_id', function (req, res) {
@@ -34,14 +47,15 @@ router.get('/:hero_id', function (req, res) {
         res.json(hero);
     });
 });
+
 /* POST todos */
 router.post('/', function (req, res) {
-    
+
     Hero.count({}, function (err, count) {
         if (err) {
             res.send(err);
         }
-        
+
         // create a new instance of the Hero model
         var hero = new Hero();
         // set the speakers properties (comes from the request)
@@ -55,7 +69,7 @@ router.post('/', function (req, res) {
             }
             // return hero
             res.json(hero);
-            
+
         });
 
     });
