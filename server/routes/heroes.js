@@ -3,6 +3,13 @@ var express = require('express');
 var router = express.Router();
 // Import Hero Model
 var Hero = require('../models/hero');
+
+var formidable = require('formidable'),
+    util = require('util'),
+    path = require('path'),
+    fs = require('fs-extra'),
+    dateFormat = require('dateformat');
+
 /* GET all users OR filtered by name*/
 router.get('/', function (req, res) {
 
@@ -83,6 +90,63 @@ router.post('/', function (req, res) {
     });
 
 });
+
+
+/* POST todos */
+router.post('/upload_file', function (req, res) {
+    var form = new formidable.IncomingForm();
+    form.parse(req, function(err, fields, files) {
+      res.writeHead(200, {'content-type': 'text/plain'});
+      res.write('received upload:\n\n');
+      res.end(util.inspect({ fields: fields, files: files }));
+    });
+
+    form.on('end', function(fields, files) {
+        /* Temporary location of our uploaded file */
+        var temp_path = this.openedFiles[0].path;
+        /* The file name of the uploaded file */
+        var file_name = this.openedFiles[0].name;
+        /* Location where we want to copy the uploaded file */
+        var new_location = './public/uploads/';
+ 
+        fs.copy(temp_path, new_location + file_name, function(err) {  
+            if (err) {
+                console.error(err);
+            } else {
+                console.log("success!")
+            }
+        });
+    }).on('error', function(err) {
+      res.writeHead(500, {'content-type': 'text/plain'});
+      res.write(err);
+      res.send('Hola');
+    });
+});
+
+/* POST todos */
+router.get('/download_file/:fileName', function (req, res) {
+    var staticBasePath = './public/uploads/';
+    var fileLoc = path.resolve(staticBasePath);
+    var parts = req.url.split('/');
+    fileLoc = path.join(fileLoc, parts.pop());
+
+    var stream = fs.createReadStream(fileLoc);
+
+    // Handle non-existent file
+    stream.on('error', function(error) {
+        res.writeHead(404, 'Not Found');
+        res.write('404: File Not Found!');
+        res.end();
+    })
+    .on('data', function(data) {
+        // File exists, stream it to user
+        res.statusCode = 200;
+        stream.pipe(res);
+    });
+
+});
+
+
 /* UPDATE specific todo by _id. 
 router.put('/:todo_id', function (req, res) {
     Todo.findById(req.params.todo_id, function (err,
