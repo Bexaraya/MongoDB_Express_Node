@@ -4,8 +4,8 @@ var passport = require('passport');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  //res.render('index.ejs');
-  /* Display the file upload form. */
+  res.render('index.ejs');
+  /* Display the file upload form. 
   res.writeHead(200, {'content-type': 'text/html'});
   res.end(
     '<form action="/api/heroes/upload_file" enctype="multipart/form-data" method="post">'+
@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
     '<input type="file" name="upload" multiple="multiple"><br>'+
     '<input type="submit" value="Upload">'+
     '</form>'
-  );
+  );*/
 });
 
 /* GET profile page. */
